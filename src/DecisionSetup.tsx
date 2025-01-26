@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Container, Row, Col, Button, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Toast } from 'react-bootstrap';
 import {
   ColDef,
   GridReadyEvent,
@@ -9,15 +9,21 @@ import {
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 import { AgGridReact } from 'ag-grid-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faSave } from '@fortawesome/free-solid-svg-icons';
 import './App.css';
 import { DecisionFactor } from './decision-factor';
+import { DecisionTemplate } from './decision-template';
+import { useDispatch } from 'react-redux';
+import { stateActions } from './store';
 
 const DecisionSetup = () => {
   const [decisionFactors, setDecisionFactors] = useState<DecisionFactor[]>([]);
   const [decisionNm, setDecisionNm] = useState<string>('');
   const [decisionFactorNm, setDecisionFactorNm] = useState<string>('');
   const [decisionWt, setDecisionWt] = useState<number>(-1);
+  const [showSaved, setShowSaved] = useState<boolean>(false);
+
+  const dispatch = useDispatch();
 
   const [columnDefs] = useState<ColDef[]>([
     { field: 'factorNm' },
@@ -40,6 +46,8 @@ const DecisionSetup = () => {
     [decisionFactors]
   );
 
+  const toggleShowSaved = () => setShowSaved((prev) => !prev);
+
   const addDecisionFactor = () => {
     //console.log('App.addDecisionFactor - evt:', evt);
     setDecisionFactors((prev) => {
@@ -53,6 +61,16 @@ const DecisionSetup = () => {
     });
     setDecisionFactorNm('');
     setDecisionWt(-1);
+  };
+
+  const saveDecisionTemplate = () => {
+    const template: DecisionTemplate = {
+      name: decisionNm,
+      factors: decisionFactors,
+    };
+    dispatch(stateActions.addDecisionTemplate(template));
+    toggleShowSaved();
+    setDecisionFactors([]);
   };
 
   return (
@@ -106,6 +124,27 @@ const DecisionSetup = () => {
           onGridReady={onGridReady}
         />
       </div>
+      <Row className="mt-3">
+        <Col className="text-end">
+          <Button
+            variant="primary"
+            className="mr-5"
+            onClick={saveDecisionTemplate}
+          >
+            <FontAwesomeIcon icon={faSave} />
+          </Button>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Toast show={showSaved} onClose={toggleShowSaved}>
+            <Toast.Header>
+              <strong className="me-auto">Saved</strong>
+            </Toast.Header>
+            <Toast.Body>Decision Template Saved!</Toast.Body>
+          </Toast>
+        </Col>
+      </Row>
     </Container>
   );
 };

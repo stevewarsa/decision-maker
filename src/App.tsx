@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
 import DecisionSetup from './DecisionSetup';
-import EvaluateDecision from './EvaluateDecision';
+import MakeDecision from './MakeDecision';
 
 const App = () => {
   const [key, setKey] = useState<string>('setup');
@@ -16,7 +16,7 @@ const App = () => {
         <DecisionSetup />
       </Tab>
       <Tab eventKey="decide" title="Make Decision">
-        <EvaluateDecision/>
+        <MakeDecision />
       </Tab>
     </Tabs>
   );

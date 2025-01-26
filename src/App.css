@@ -1,3 +1,5 @@
 #root {
-  margin: auto;
+  margin: 0; /* Prevent centering */
+  width: 100%; /* Take up full width */
+  height: 100%; /* Match body's height */
 }
